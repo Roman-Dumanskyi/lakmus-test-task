@@ -1,0 +1,74 @@
+<div class="wrapper">
+  <form
+    *ngIf="form"
+    class="form"
+    [formGroup]="form"
+    (ngSubmit)="generateResult()"
+  >
+    <div class="date-picker" formGroupName="encounter">
+      <label class="label">Дата:</label>
+      <input
+        class="form-control"
+        placeholder="yyyy-mm-dd"
+        name="dp"
+        ngbDatepicker
+        #d="ngbDatepicker"
+        formControlName="date"
+        [minDate]="today"
+      />
+      <button class="date-picker-btn" (click)="d.toggle()" type="button">
+        <bi name="calendar" class="big fill-red calendar-icon"></bi>
+      </button>
+    </div>
+
+    <div class="input-group" formGroupName="conditions" class="conditions">
+      <label class="label">Діагнози за ICPC-2</label>
+      <ng-container
+        *ngFor="
+          let condition of getConditions()['controls'];
+          let conditionsIndex = index
+        "
+      >
+        <div [formGroupName]="conditionsIndex" class="condition">
+          <div>
+            <ng-select
+              [items]="conditionOptions$ | async"
+              bindLabel="name"
+              placeholder="Select condition"
+              formControlName="condition"
+              (search)="getConditionOptions($event)"
+            >
+            </ng-select>
+          </div>
+          <div>
+            <input
+              class="comment"
+              type="text"
+              formControlName="notes"
+              placeholder="коментар"
+            />
+          </div>
+          <div>
+            <button
+              [disabled]="getConditions()['controls'].length === 1"
+              type="button"
+              class="remove-condition"
+              (click)="removeCondition(conditionsIndex)"
+            >
+              &#x2715;
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+      <button type="button" class="add-condition" (click)="addCondition()">
+        + додати ще
+      </button>
+    </div>
+
+    <button type="submit" class="create-json">Сформувати JSON</button>
+
+    <label class="label">JSON:</label>
+    <textarea class="result-area" #resultArea disabled></textarea>
+  </form>
+</div>
